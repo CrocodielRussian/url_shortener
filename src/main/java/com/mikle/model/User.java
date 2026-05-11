@@ -3,10 +3,14 @@ package com.mikle.model;
 import jakarta.persistence.*;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
+import lombok.Getter;
+import lombok.Setter;
 
 import java.util.Collection;
 import java.util.Collections;
 
+@Getter
+@Setter
 @Entity
 @Table(name = "users")
 public class User implements UserDetails {
@@ -19,7 +23,6 @@ public class User implements UserDetails {
 
     @Column(nullable = false)
     private String password;
-
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
