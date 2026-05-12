@@ -24,7 +24,9 @@ public class UserService {
 
     @Transactional
     public User register(String username, String password) {
-        if (userRepository.findByUsername(username).isPresent()) throw new IllegalArgumentException();
+        userRepository.findByUsername(username).orElseThrow(
+                () -> new IllegalArgumentException("User with this name already exist")
+        );
         User newUser = new User();
         newUser.setUsername(username);
         newUser.setPassword(passwordEncoder.encode(password));
