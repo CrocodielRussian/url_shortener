@@ -1,0 +1,20 @@
+<div class="container">
+  <header>
+    <h1>Короткие URLs | Авторизация</h1>
+  </header>
+  <div class="auth-form">
+    <h2>Вход</h2>
+    <form #loginForm="ngForm" (ngSubmit)="onLogin()">
+      <div>
+        <label for="username">Логин:</label>
+        <input type="text" id="username" [(ngModel)]="username" name="username" required>
+      </div>
+      <div>
+        <label for="password">Пароль:</label>
+        <input type="password" id="password" [(ngModel)]="password" name="password" required>
+      </div>
+      <button type="submit" [disabled]="!loginForm.valid">Войти</button>
+      <button type="button" (click)="onRegister()">Зарегистрироваться</button>
+    </form>
+  </div>
+</div>

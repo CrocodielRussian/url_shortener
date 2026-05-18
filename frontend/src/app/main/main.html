@@ -1,0 +1,193 @@
+<div class="page">
+
+  <!-- HEADER -->
+  <header class="header">
+    <div class="header-inner">
+      <div class="brand">
+        <span class="brand-icon">⌁</span>
+        <span class="brand-name">SNIP</span>
+      </div>
+      <div class="header-right">
+        <span class="stat">{{ urls().length }} ссылок</span>
+        <button class="logout-btn" (click)="logout()">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/>
+            <polyline points="16 17 21 12 16 7"/>
+            <line x1="21" y1="12" x2="9" y2="12"/>
+          </svg>
+          Выйти
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <main class="content">
+
+    <!-- SHORTEN CARD -->
+    <section class="shorten-card">
+      <div class="section-label">Сократить URL</div>
+
+      <form [formGroup]="form" (ngSubmit)="submit()" novalidate>
+        <div class="input-row" [class.input-row--error]="originalUrl.invalid && originalUrl.touched">
+          <span class="input-icon">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/>
+              <path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/>
+            </svg>
+          </span>
+          <input
+            type="url"
+            class="url-input"
+            formControlName="originalUrl"
+            placeholder="https://example.com/very/long/url/that/needs/shortening"
+            autocomplete="off" />
+          <button type="submit" class="shorten-btn" [disabled]="shortening()">
+            @if (!shortening()) {
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                <polyline points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/>
+              </svg>
+              Сократить
+            } @else {
+              <span class="spinner-sm"></span>
+            }
+          </button>
+        </div>
+
+        @if (originalUrl.invalid && originalUrl.touched) {
+          <div class="field-error">
+            @if (originalUrl.errors?.['required']) { Введите URL }
+            @if (originalUrl.errors?.['pattern']) { URL должен начинаться с http:// или https:// }
+          </div>
+        }
+
+        @if (shortenError()) {
+          <div class="inline-error">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/>
+            </svg>
+            {{ shortenError() }}
+          </div>
+        }
+      </form>
+
+      <!-- Result -->
+      @if (newShortUrl()) {
+        <div class="result-card">
+          <div class="result-label">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+              <polyline points="20 6 9 17 4 12"/>
+            </svg>
+            Готово! Ваша короткая ссылка:
+          </div>
+          <div class="result-row">
+            <a [href]="newShortUrl()!" target="_blank" class="result-url">{{ newShortUrl() }}</a>
+            <button class="copy-btn" (click)="copy(newShortUrl()!, 'new')">
+              @if (copiedId() !== 'new') {
+                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/>
+                </svg>
+                Копировать
+              } @else {
+                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                  <polyline points="20 6 9 17 4 12"/>
+                </svg>
+                Скопировано!
+              }
+            </button>
+          </div>
+        </div>
+      }
+    </section>
+
+    <!-- TABLE -->
+    <section class="table-section">
+      <div class="table-header">
+        <h2 class="table-title">Мои ссылки</h2>
+        <button class="refresh-btn" (click)="loadUrls()" [disabled]="loadingUrls()">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+               [class.spin]="loadingUrls()">
+            <polyline points="23 4 23 10 17 10"/>
+            <path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"/>
+          </svg>
+          Обновить
+        </button>
+      </div>
+
+      @if (loadingUrls()) {
+        <div class="skeletons">
+          <div class="skeleton"></div>
+          <div class="skeleton"></div>
+          <div class="skeleton"></div>
+        </div>
+      } @else if (urls().length === 0) {
+        <div class="empty">
+          <div class="empty-icon">⌁</div>
+          <p class="empty-title">Пока нет сохранённых ссылок</p>
+          <p class="empty-sub">Сократите первую ссылку выше</p>
+        </div>
+      } @else {
+        <div class="table-wrap">
+          <table class="url-table">
+            <thead>
+              <tr>
+                <th>Короткая ссылка</th>
+                <th>Исходный URL</th>
+                <th>Дата</th>
+                <th>Клики</th>
+                <th class="col-actions">Действия</th>
+              </tr>
+            </thead>
+            <tbody>
+              @for (url of urls(); track url.id) {
+                <tr class="trow" [class.trow--deleting]="deletingId() === url.id">
+                  <td>
+                    <a [href]="url.shortUrl" target="_blank" class="short-link">{{ url.shortCode }}</a>
+                  </td>
+                  <td>
+                    <span class="long-url" [title]="url.originalUrl">{{ truncate(url.originalUrl) }}</span>
+                  </td>
+                  <td class="date-cell">{{ fmtDate(url.createdAt) }}</td>
+                  <td>
+                    <span class="click-badge" [class.click-badge--muted]="url.clickCount === undefined">
+                      {{ url.clickCount !== undefined ? url.clickCount : '—' }}
+                    </span>
+                  </td>
+                  <td class="actions-cell">
+                    <button class="act-btn act-btn--copy" (click)="copy(url.shortUrl, url.id)" title="Копировать">
+                      @if (copiedId() !== url.id) {
+                        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                          <rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/>
+                        </svg>
+                      } @else {
+                        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                          <polyline points="20 6 9 17 4 12"/>
+                        </svg>
+                      }
+                    </button>
+                    <button class="act-btn act-btn--open" (click)="open(url.shortUrl)" title="Открыть">
+                      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/>
+                        <polyline points="15 3 21 3 21 9"/>
+                        <line x1="10" y1="14" x2="21" y2="3"/>
+                      </svg>
+                    </button>
+                    <button class="act-btn act-btn--delete" (click)="delete(url.id)"
+                            [disabled]="deletingId() === url.id" title="Удалить">
+                      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <polyline points="3 6 5 6 21 6"/>
+                        <path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/>
+                        <path d="M10 11v6"/><path d="M14 11v6"/>
+                        <path d="M9 6V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/>
+                      </svg>
+                    </button>
+                  </td>
+                </tr>
+              }
+            </tbody>
+          </table>
+        </div>
+      }
+    </section>
+
+  </main>
+</div>

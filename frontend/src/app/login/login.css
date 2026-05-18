@@ -1,0 +1,56 @@
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 20px;
+}
+
+header {
+  text-align: center;
+  margin-bottom: 20px;
+}
+
+.auth-form {
+  max-width: 400px;
+  height: 400px;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 15px;
+  border: 1px solid orange;
+  border-radius: 10%;
+}
+
+.auth-form div {
+  display: flex;
+  flex-direction: column;
+}
+
+button {
+	margin: 1em;
+	padding: 10px;
+	cursor: pointer;
+}
+
+/* Desktop: >= 1258px */
+@media screen and (min-width: 1258px) {
+  .auth-form {
+    max-width: 500px;
+  }
+}
+
+/* Tablet: 652px - 1257px */
+@media screen and (min-width: 652px) and (max-width: 1257px) {
+  .auth-form {
+    max-width: 400px;
+  }
+}
+
+/* Mobile: < 652px */
+@media screen and (max-width: 651px) {
+  .auth-form {
+    max-width: 100%;
+    padding: 0 10px;
+  }
+}
