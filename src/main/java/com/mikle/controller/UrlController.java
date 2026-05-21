@@ -18,14 +18,14 @@ public class UrlController {
 
     private final UrlService urlService;
 
-    @PostMapping
+    @PostMapping("/add")
     public ResponseEntity<UrlResponse> add(@RequestBody UrlRequest request) {
         Url url = urlService.addUrl(request.getUrl());
         return ResponseEntity.status(HttpStatus.CREATED)
                 .body(toResponse(url));
     }
 
-    @GetMapping
+    @GetMapping("/my")
     public ResponseEntity<List<UrlResponse>> getUrls() {
         List<UrlResponse> urls = urlService.getUserUrls()
                 .stream()
