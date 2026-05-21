@@ -21,6 +21,7 @@ public class UrlController {
     @PostMapping("/add")
     public ResponseEntity<UrlResponse> add(@RequestBody UrlRequest request) {
         Url url = urlService.addUrl(request.getUrl());
+
         return ResponseEntity.status(HttpStatus.CREATED)
                 .body(toResponse(url));
     }
@@ -40,10 +41,10 @@ public class UrlController {
         return ResponseEntity.noContent().build();
     }
 
-    @DeleteMapping("/clear")
+    @DeleteMapping
     public ResponseEntity<Void> clearUrls() {
         urlService.clearUrls();
-        return ResponseEntity.ok().build();
+        return ResponseEntity.noContent().build();
     }
 
     private UrlResponse toResponse(Url url) {
