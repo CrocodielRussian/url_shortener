@@ -40,7 +40,7 @@ public class UrlController {
         return ResponseEntity.noContent().build();
     }
 
-    @DeleteMapping
+    @DeleteMapping("/clear")
     public ResponseEntity<Void> clearUrls() {
         urlService.clearUrls();
         return ResponseEntity.ok().build();

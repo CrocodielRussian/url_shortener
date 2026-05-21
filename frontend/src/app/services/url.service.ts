@@ -6,7 +6,7 @@ import { environment } from '../../environments/environment.prod';
 
 @Injectable({ providedIn: 'root' })
 export class UrlService {
-private apiUrl = environment.apiUrl + '/api/auth';
+private apiUrl = environment.apiUrl + '/api';
   private http = inject(HttpClient);
 
   shorten(body: ShortenRequest): Observable<ShortenResponse> {
