@@ -5,6 +5,7 @@ import com.mikle.dto.UrlResponse;
 import com.mikle.model.Url;
 import com.mikle.service.UrlService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -15,6 +16,9 @@ import java.util.List;
 @RequestMapping("/api/url")
 @RequiredArgsConstructor
 public class UrlController {
+
+    @Value("${app.base-url}")
+    private String baseUrl;
 
     private final UrlService urlService;
 
@@ -50,7 +54,7 @@ public class UrlController {
     private UrlResponse toResponse(Url url) {
         return new UrlResponse(
                 url.getId(),
-                "http://localhost/" + url.getShortUrl(),
+                baseUrl.replaceAll("/$", "") + "/" + url.getShortUrl(),
                 url.getLongUrl()
         );
     }

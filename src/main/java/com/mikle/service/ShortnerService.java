@@ -5,6 +5,7 @@ import org.springframework.stereotype.Service;
 
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.security.SecureRandom;
 
 @Service
 @RequiredArgsConstructor
@@ -13,7 +14,11 @@ public class ShortnerService {
     private static final int CODE_LENGTH = 8;
     private static final int MAX_ATTEMPTS = 8; // максимум сдвигов по хешу
 
+    private static final char[] ALPHABET =
+            "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ".toCharArray();
+
     private final BloomFilterService bloomFilter;
+    private final SecureRandom secureRandom = new SecureRandom();
 
     public String generateShortUrl(String longUrl) {
         String hash = sha256(longUrl);
@@ -33,7 +38,7 @@ public class ShortnerService {
 
     private String fallback(String hash) {
         String base = hash.substring(0, 6);
-        String suffix = Integer.toHexString((int)(Math.random() * 256));
+        String suffix = Integer.toHexString((int)(secureRandom.nextInt(ALPHABET.length) * 256));
         suffix = suffix.length() == 1 ? "0" + suffix : suffix;
         String code = base + suffix;
 

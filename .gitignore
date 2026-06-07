@@ -17,6 +17,14 @@ out/
 !**/src/main/**/out/
 !**/src/test/**/out/
 
+## Kubernets
+backend-secret.yaml
+postgres-secret.yaml
+*.secret.yaml
+.env
+.env.*
+kubectl
+
 ### Eclipse ###
 .apt_generated
 .classpath

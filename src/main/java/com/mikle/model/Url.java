@@ -7,18 +7,26 @@ import lombok.Getter;
 @Getter
 @Setter
 @Entity
-@Table(name = "urls")
+@Table(
+        name = "urls",
+        uniqueConstraints = {
+                @UniqueConstraint(name = "uk_url_short", columnNames = "short_url"),
+                @UniqueConstraint(name = "uk_user_long_url", columnNames = {"user_id", "long_url"})
+        }
+)
 public class Url {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    @Column(unique = true, nullable = false)
+
+    @Column(name = "short_url", unique = true, nullable = false)
     private String shortUrl;
 
-    @Column(unique = true, nullable = false)
+    @Column(name = "long_url", nullable = false, length = 2048)
     private String longUrl;
 
-    @ManyToOne
-    @JoinColumn(name = "user_id")
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_id", nullable = false)
     private User user;
 }

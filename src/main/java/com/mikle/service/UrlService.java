@@ -17,14 +17,44 @@ import java.util.Optional;
 @Service
 @RequiredArgsConstructor
 public class UrlService {
+
     private final UrlRepository urlRepository;
     private final ShortnerService shortnerService;
+    private final UrlCacheService urlCacheService;
 
     @Transactional
     public Url addUrl(String longUrl) {
         User user = getCurrentUser();
+        Long userId = user.getId();
 
-        System.out.println("Principal userId: " + user);
+        String cachedShortUrl =
+                urlCacheService.findShortUrlByUserIdAndLongUrl(userId, longUrl);
+
+        if (cachedShortUrl != null) {
+            return urlRepository.findByUserIdAndLongUrl(userId, longUrl)
+                    .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
+        }
+
+        Optional<Url> existingUrl =
+                urlRepository.findByUserIdAndLongUrl(userId, longUrl);
+
+        if (existingUrl.isPresent()) {
+            Url url = existingUrl.get();
+
+            urlCacheService.putUserLongToShort(
+                    userId,
+                    url.getLongUrl(),
+                    url.getShortUrl()
+            );
+
+            urlCacheService.putShortToLong(
+                    url.getShortUrl(),
+                    url.getLongUrl()
+            );
+
+            return url;
+        }
+
         Url newUrl = new Url();
 
         String shortUrl = shortnerService.generateShortUrl(longUrl);
@@ -33,22 +63,63 @@ public class UrlService {
         newUrl.setLongUrl(longUrl);
         newUrl.setShortUrl(shortUrl);
 
-        return urlRepository.save(newUrl);
+        Url savedUrl = urlRepository.save(newUrl);
+
+        urlCacheService.putUserLongToShort(
+                userId,
+                savedUrl.getLongUrl(),
+                savedUrl.getShortUrl()
+        );
+
+        urlCacheService.putShortToLong(
+                savedUrl.getShortUrl(),
+                savedUrl.getLongUrl()
+        );
+
+        return savedUrl;
+    }
+
+    @Transactional(readOnly = true)
+    public String resolveLongUrl(String shortUrl) {
+        String longUrl = urlCacheService.findLongUrlByShortUrl(shortUrl);
+
+        if (longUrl == null) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND);
+        }
+
+        return longUrl;
     }
 
     @Transactional
     public void deleteUrl(Long urlId) {
-        urlRepository.deleteById(urlId);
+        Url url = urlRepository.findById(urlId)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
+
+        Long userId = url.getUser().getId();
+        String longUrl = url.getLongUrl();
+        String shortUrl = url.getShortUrl();
+
+        urlRepository.delete(url);
+
+        urlCacheService.evictUserLongToShort(userId, longUrl);
+        urlCacheService.evictShortToLong(shortUrl);
     }
 
     @Transactional
     public void clearUrls() {
         User user = getCurrentUser();
-        urlRepository.deleteByUserId(user.getId());
-    }
+        List<Url> urls = urlRepository.findByUserId(user.getId());
 
-    public Optional<Url> findByShortUrl(String shortUrl) {
-        return urlRepository.findByShortUrl(shortUrl);
+        for (Url url : urls) {
+            urlCacheService.evictUserLongToShort(
+                    user.getId(),
+                    url.getLongUrl()
+            );
+
+            urlCacheService.evictShortToLong(url.getShortUrl());
+        }
+
+        urlRepository.deleteByUserId(user.getId());
     }
 
     public List<Url> getUserUrls() {
