@@ -122,6 +122,11 @@ public class UrlService {
         urlRepository.deleteByUserId(user.getId());
     }
 
+    public List<Url> getUserUrls() {
+        User user = getCurrentUser();
+        return urlRepository.findByUserId(user.getId());
+    }
+
     private User getCurrentUser() {
         Object principal = SecurityContextHolder.getContext()
                 .getAuthentication()

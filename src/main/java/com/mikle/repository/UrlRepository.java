@@ -14,10 +14,12 @@ import java.util.Optional;
 @Repository
 public interface UrlRepository extends JpaRepository<Url, Long> {
     Optional<Url> findByUserIdAndLongUrl(Long userId, String longUrl);
-    List<Url> findAllShortUrls();
 
     @Query("select u.longUrl from Url u where u.shortUrl = :shortUrl")
     Optional<String> findLongUrlByShortUrl(@Param("shortUrl") String shortUrl);
+
+    @Query("SELECT u.shortUrl FROM Url u")
+    List<String> findAllShortUrls();
 
     @Query("""
            select u.shortUrl
@@ -31,5 +33,7 @@ public interface UrlRepository extends JpaRepository<Url, Long> {
 
     List<Url> findByUserId(Long userId);
 
+    @Modifying
+    @Transactional
     void deleteByUserId(Long userId);
 }
