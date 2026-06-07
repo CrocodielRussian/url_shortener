@@ -1,24 +1,30 @@
 spring:
   datasource:
-    url: ${SPRING_DATASOURCE_URL:jdbc:postgresql://localhost:5432/urldb}
-    username: ${SPRING_DATASOURCE_USERNAME:postgres}
-    password: ${SPRING_DATASOURCE_PASSWORD:postgresql}
+    url: ${SPRING_DATASOURCE_URL}
+    username: ${SPRING_DATASOURCE_USERNAME}
+    password: ${SPRING_DATASOURCE_PASSWORD}
+
   jpa:
     hibernate:
-      ddl-auto: update
-    show-sql: false
+      ddl-auto: ${SPRING_JPA_HIBERNATE_DDL_AUTO:update}
+    show-sql: ${SPRING_JPA_SHOW_SQL:false}
+
   data:
     redis:
-      host: ${SPRING_REDIS_HOST:localhost}
-      port: ${SPRING_REDIS_PORT:6379}
+      host: ${SPRING_REDIS_HOST}
+      port: ${SPRING_REDIS_PORT}
+
   cache:
     type: redis
     redis:
-      time-to-live: 3600000
-
-jwt:
-  secret: ${JWT_SECRET:4523e1e79162486571c8ad0fb5c496b528a625bb62c7d9ce6c6f853ca8d90eb3}
-  expiration: ${JWT_EXPIRATION:3600000}
+      time-to-live: ${SPRING_CACHE_REDIS_TTL:3600000}
 
 server:
-  port: 8080
+  port: ${SERVER_PORT:8080}
+
+app:
+  base-url: ${APP_BASE_URL}
+
+jwt:
+  secret: ${JWT_SECRET}
+  expiration: ${JWT_EXPIRATION}
