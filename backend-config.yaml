@@ -1,0 +1,11 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: backend-config
+data:
+  JWT_EXPIRATION: "3600000"
+  SPRING_DATASOURCE_URL: "jdbc:postgresql://postgres:5432/urldb"
+  SPRING_DATASOURCE_USERNAME: "user"
+  SPRING_REDIS_HOST: "redis"
+  SPRING_REDIS_PORT: "6379"
+  APP_BASE_URL: "http://shortener.local"
