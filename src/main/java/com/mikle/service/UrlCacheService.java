@@ -16,8 +16,7 @@ public class UrlCacheService {
     @Cacheable(
             cacheNames = "shortToLong",
             key = "#shortUrl",
-            unless = "#result == null",
-            sync = true
+            unless = "#result == null"
     )
     public String findLongUrlByShortUrl(String shortUrl) {
         return urlRepository.findLongUrlByShortUrl(shortUrl).orElse(null);
@@ -26,8 +25,7 @@ public class UrlCacheService {
     @Cacheable(
             cacheNames = "userLongToShort",
             key = "#userId + ':' + #longUrl",
-            unless = "#result == null",
-            sync = true
+            unless = "#result == null"
     )
     public String findShortUrlByUserIdAndLongUrl(Long userId, String longUrl) {
         return urlRepository.findShortUrlByUserIdAndLongUrl(userId, longUrl)
