@@ -16,8 +16,12 @@ import java.net.URI;
 public class RedirectController {
     private final UrlService urlService;
 
-    @GetMapping("/{shortUrl:[0-9a-f]{8}")
+    @GetMapping("/{shortUrl}")
     public ResponseEntity<Void> redirect(@PathVariable String shortUrl) {
+        if (!shortUrl.matches("[0-9a-f]{8}")) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND);
+        }
+
         String longUrl = urlService.resolveLongUrl(shortUrl);
 
         return ResponseEntity.status(HttpStatus.FOUND)
