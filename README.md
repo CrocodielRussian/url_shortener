@@ -1,5 +1,3 @@
-
-
 # URL Shortener
 
 A full-stack URL shortener built with Angular, Spring Boot, PostgreSQL, Redis, and Nginx.
@@ -69,7 +67,6 @@ The backend stores URL mappings in PostgreSQL and uses Redis as a cache for fast
 ├── nginx/                 # Nginx Dockerfile and reverse proxy config
 ├── src/main/java/         # Spring Boot backend
 ├── src/main/resources/    # Spring Boot configuration
-├── k8s/                   # Kubernetes manifests
 ├── docker-compose.yml     # Local Docker Compose stack
 ├── Dockerfile             # Backend Docker build
 ├── build.gradle           # Backend dependencies and build tasks
