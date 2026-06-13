@@ -2,33 +2,51 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: backend
+  labels:
+    app.kubernetes.io/name: backend
+    app.kubernetes.io/part-of: url-shortener
+    app.kubernetes.io/component: api
 spec:
-  replicas: 1
+  replicas: 2
   selector:
     matchLabels:
-      io.kompose.service: backend
+      app.kubernetes.io/name: backend
+      app.kubernetes.io/part-of: url-shortener
   template:
     metadata:
       labels:
-        io.kompose.service: backend
+        app.kubernetes.io/name: backend
+        app.kubernetes.io/part-of: url-shortener
+        app.kubernetes.io/component: api
     spec:
       containers:
         - name: backend
-          image: backend:local
-          imagePullPolicy: Never
+          image: cr.yandex/crpogeb659nijsu3456s/backend:1.0.0
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 8080
+
           envFrom:
             - configMapRef:
                 name: backend-config
+
           env:
+            - name: SPRING_DATASOURCE_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: backend-secret
+                  key: SPRING_DATASOURCE_PASSWORD
+
             - name: JWT_SECRET
               valueFrom:
                 secretKeyRef:
                   name: backend-secret
                   key: JWT_SECRET
 
-            - name: SPRING_DATASOURCE_PASSWORD
-              valueFrom:
-                secretKeyRef:
-                  name: backend-secret
-                  key: SPRING_DATASOURCE_PASSWORD
-      restartPolicy: Always
+          resources:
+            requests:
+              cpu: "250m"
+              memory: "512Mi"
+            limits:
+              cpu: "1"
+              memory: "1Gi"

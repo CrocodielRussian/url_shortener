@@ -2,10 +2,22 @@ apiVersion: v1
 kind: ConfigMap
 metadata:
   name: backend-config
+  labels:
+    app.kubernetes.io/name: backend
+    app.kubernetes.io/part-of: url-shortener
+    app.kubernetes.io/component: api
 data:
-  JWT_EXPIRATION: "3600000"
-  SPRING_DATASOURCE_URL: "jdbc:postgresql://postgres:5432/urldb"
+  SPRING_DATASOURCE_URL: "jdbc:postgresql://c-c9qhj8hpg2nqmcg9ibce.rw.mdb.yandexcloud.net:6432/urldb"
   SPRING_DATASOURCE_USERNAME: "user"
+
   SPRING_REDIS_HOST: "redis"
   SPRING_REDIS_PORT: "6379"
-  APP_BASE_URL: "http://shortener.local"
+
+  SPRING_JPA_HIBERNATE_DDL_AUTO: "update"
+  SPRING_JPA_SHOW_SQL: "false"
+
+  SPRING_CACHE_REDIS_TTL: "3600000"
+  SERVER_PORT: "8080"
+
+  APP_BASE_URL: "http://urlshortener.ru"
+  JWT_EXPIRATION: "3600000"

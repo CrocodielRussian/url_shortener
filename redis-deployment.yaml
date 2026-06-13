@@ -1,26 +1,33 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  labels:
-    io.kompose.service: redis
   name: redis
+  labels:
+    app.kubernetes.io/name: redis
+    app.kubernetes.io/part-of: url-shortener
+    app.kubernetes.io/component: cache
 spec:
   replicas: 1
   selector:
     matchLabels:
-      io.kompose.service: redis
+      app.kubernetes.io/name: redis
+      app.kubernetes.io/part-of: url-shortener
   template:
     metadata:
       labels:
-        io.kompose.service: redis
+        app.kubernetes.io/name: redis
+        app.kubernetes.io/part-of: url-shortener
+        app.kubernetes.io/component: cache
     spec:
       containers:
-        - args:
-            - redis-server
-            - --maxmemory
-            - 256mb
-            - --maxmemory-policy
-            - allkeys-lru
+        - name: redis
           image: redis:7-alpine
-          name: redis
-      restartPolicy: Always
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 6379
+          args:
+            - "redis-server"
+            - "--maxmemory"
+            - "256mb"
+            - "--maxmemory-policy"
+            - "allkeys-lru"
