@@ -1,3 +1,11 @@
+<p align="left">
+  <img src="https://img.shields.io/badge/Backend-Spring Boot-4169E1?style=for-the-badge&logo=postgresql&logoColor=white" alt="Spring Boot" />
+  <img src="https://img.shields.io/badge/Database-PostgreSQL-4169E1?style=for-the-badge&logo=postgresql&logoColor=white" alt="PostgreSQL" />
+  <img src="https://img.shields.io/badge/Cache-Redis-DC382D?style=for-the-badge&logo=redis&logoColor=white" alt="Redis" />
+  <img src="https://img.shields.io/badge/Proxy-Nginx-009639?style=for-the-badge&logo=nginx&logoColor=white" alt="Nginx" />
+    <img src="https://img.shields.io/badge/Orchestration-Kubernetes-009639?style=for-the-badge&logo=nginx&logoColor=white" alt="Kubernetes" />
+</p>
+
 # URL Shortener
 
 A full-stack URL shortener built with Angular, Spring Boot, PostgreSQL, Redis, and Nginx.
@@ -30,6 +38,7 @@ Production deployment is designed for Kubernetes. The project can run locally wi
 * Delete all links of the authenticated user
 * Public redirect from short links to original URLs
 * Redis caching for faster short URL resolution
+* Bloom filter support for fast checking of existing short URL codes
 * Nginx reverse proxy for frontend, API, and public redirects
 * Kubernetes-ready deployment
 
